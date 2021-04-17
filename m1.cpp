@@ -27,10 +27,17 @@ int data2[50000];
 int ah3[200000];
 int ah1[10000];
 int ah2[50000];
+int ah4[100];
 int color1[10000];
 int color2[50000];
 int color3[200000];
+int color4[100];
 int K;
+int cnum[100];
+double startTime1;
+double endTime1;
+double startTime2;
+double endTime2;
 int main(int argc, char** argv) {
 	cout << "1.随机生成数据 " << endl;
 	cout << "2.退出 " << endl;
@@ -40,6 +47,7 @@ int main(int argc, char** argv) {
 	}
 	ofstream out("data.txt");//打开文件
 	ofstream pout("color.txt");
+	ofstream qout("cnum.txt");
 	if (q == 2) {
 		pout.close();
 		out.close();
@@ -50,8 +58,9 @@ int main(int argc, char** argv) {
 		cout << "1.10000 " << endl;
 		cout << "2.50000 " << endl;
 		cout << "3.200000 " << endl;
-		cout << "4.退出 " << endl;
-		while (inputCheck(&select) == -1 || select > 4 || select < 1)
+		cout << "4.多个小数组计算时间" << endl;
+		cout << "5.退出 " << endl;
+		while (inputCheck(&select) == -1 || select > 5 || select < 1)
 		{
 			printf("输入错误!请重新输入:");
 		}
@@ -85,9 +94,21 @@ int main(int argc, char** argv) {
 			out.close();
 			pout.close();
 		}
+		if (select == 4) {
+			number = 100;
+			srand((int)time(0));
+			for (int i = 0; i < 100; i++) {
+				qout << rand() % (MAX - MIN + 1) + MIN << endl;//产生的数据在min到max之间 
+				pout << rand() % 3 << endl;
+			}
+			pout.close();
+			qout.close();
+		}
+		if (select == 5)return 0;
 	}
 	ifstream fin("data.txt");
 	ifstream pin("color.txt");
+	ifstream qin("cnum.txt");
 	if (select == 1)
 		for (int op = 0; op < number; op++) {
 			fin >> data1[op];
@@ -103,6 +124,11 @@ int main(int argc, char** argv) {
 			fin >> data3[op];
 			pin >> color3[op];
 		}
+	else if (select == 4) {
+		for (int op = 0; op < 100; op++) {
+			qin >> cnum[op];
+		}
+	}
 	cout << endl;
 	cout << "1.插入排序 " << endl;
 	cout << "2.归并排序 " << endl;
@@ -166,6 +192,48 @@ int main(int argc, char** argv) {
 			cout << endl << "第" << K << "小的数为：" << findK(data3, 0, 200000, K) << endl; break;
 		}
 	}
+	else if (select == 4) {
+		startTime1 = clock();
+		
+		//cout <<endl<< startTime1 << endl;
+		switch (n) {
+		case 1: insertSort(cnum, 100);break;//OK  ch
+		case 2:MergeSort(cnum, 0, 100, ah4); break;//ah
+		case 3:QuickSort(cnum, 0, 100); break;//OK ch
+		case 4:CountSort(cnum, 100); break;//OK ch
+		case 5:RadixCountSort(cnum, 100); break;//OK  
+		case 6:ColorSort(color4, 100); break;//OK  dh
+		case 7:cout << "输入K的值:（第K小个数）------K[1,100]" << endl;
+			while (inputCheck(&K) == -1 || K > 100 || K < 0)
+			{
+				printf("输入错误!请重新输入:");
+			}
+			findK(cnum, 0, 100, K);
+			//cout << endl << "第" << K << "小的数为：" << findK(data3, 0, 100, K) << endl; break;
+		}
+		double endTime1 = clock();
+		//cout << endl << endTime1 << endl;
+		cout<<"进行一次元素为100的数组排序需要的时间为"<<abs((double)(endTime1 - startTime1)/ CLOCKS_PER_SEC) << "s" << endl;
+		startTime2 = clock();
+		for (int ui = 0; ui < 100000; ui++) {
+			for (int ai = 0; ai < 100; ai++) {
+					cnum[ai]=rand() % (MAX - MIN + 1) + MIN;
+			}
+			switch (n) {
+			case 1: insertSort(cnum, 100); break;//OK  ch
+			case 2:MergeSort(cnum, 0, 100, ah4); break;//ah
+			case 3:QuickSort(cnum, 0, 100); break;//OK ch
+			case 4:CountSort(cnum, 100); break;//OK ch
+			case 5:RadixCountSort(cnum, 100); break;//OK  
+			case 6:ColorSort(color4, 100); break;//OK  dh
+			case 7:
+				findK(cnum, 0, 100, K);
+				 break;
+			}
+		}double endTime2 = clock();
+		cout<<"进行100k次元素为100的数组排序需要的时间为"<< (double)(endTime2 - startTime2) / CLOCKS_PER_SEC << "s" << std::endl;
+		return 0;
+	}
 	if (n == 7)return 0;
 	cout << endl << "1.显示排序后的数组" << endl;
 	cout << "2.退出" << endl;
@@ -173,6 +241,7 @@ int main(int argc, char** argv) {
 	{
 		printf("输入错误!请重新输入:");
 	}
+	if (final == 2)return 0;
 	if (select == 1) {
 		if (n == 6) {
 			for (int te = 0; te < number; te++) {
